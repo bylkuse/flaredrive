@@ -32,6 +32,38 @@ const getMetadataFromHeaders = (ctx: Context) => {
   return customMetadata
 }
 
+// Update file metadata (isPublic, etc.)
+// Using POST instead of PATCH for better proxy compatibility
+bucket.post('*/metadata', async (ctx) => {
+  const user = await getSessionUser(ctx)
+  if (!user) return ctx.json({ error: 'Unauthorized' }, 401)
+
+  // Remove '/metadata' suffix from path parsing
+  const reqPath = ctx.req.path.replace(/\/metadata$/, '')
+  const { bucketId, path: filePath } = parseBucketPath(reqPath, 'bucket')
+  if (!bucketId) return ctx.json({ error: 'Bucket not found' }, 404)
+  const cfg = await getBucketConfigById(ctx, bucketId)
+  if (!cfg) return ctx.json({ error: 'Bucket not found' }, 404)
+  if (cfg.ownerUserId !== user.id) return ctx.json({ error: 'Forbidden' }, 403)
+
+  if (!filePath) return ctx.json({ error: 'Invalid path' }, 400)
+
+  const body = await ctx.req.json().catch(() => null)
+  const isPublic = body?.isPublic
+
+  if (typeof isPublic === 'boolean') {
+    await setPathMetadata(ctx, user.id, bucketId, filePath, { isPublic })
+  }
+
+  const meta = await getPathMetadata(ctx, bucketId, filePath)
+  return ctx.json({
+    path: filePath,
+    isPublic: meta?.isPublic === 1,
+    url: `/api/raw/${bucketId}/${filePath}`,
+  })
+})
+
+// Keep PATCH for backward compatibility
 bucket.patch('*', async (ctx) => {
   const user = await getSessionUser(ctx)
   if (!user) return ctx.json({ error: 'Unauthorized' }, 401)
