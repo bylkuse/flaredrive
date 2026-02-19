@@ -218,8 +218,10 @@ export const useBucketStore = defineStore('bucket', () => {
 
   const togglePublic = async (path: string, isPublic: boolean) => {
     try {
-      // Use POST to /metadata endpoint for better proxy compatibility
-      const { data } = await fexios.post(`/api/bucket/${currentBucketName.value}/${path}/metadata`, {
+      // Use /api/objects/:bucketId/set-metadata with path in body
+      // to avoid proxy issues with file extensions in URL
+      const { data } = await fexios.post(`/api/objects/${currentBucketName.value}/set-metadata`, {
+        key: path,
         isPublic,
       })
       // Should probably update the list item state locally too if we had it in store
