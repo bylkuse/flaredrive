@@ -164,9 +164,19 @@ export const useBucketStore = defineStore('bucket', () => {
     if (!filePath) {
       return ''
     }
-    const cdnBaseUrl =
-      bucketCdnMap.value[bucketName] || (bucketName ? normalizeCdnBaseUrl(`/api/raw/${bucketName}/`) : CDN_BASE_URL)
-    const url = new URL(filePath, cdnBaseUrl)
+    // If bucket has a custom CDN URL configured, use traditional path format
+    const customCdnUrl = bucketCdnMap.value[bucketName]
+    if (customCdnUrl) {
+      const url = new URL(filePath, customCdnUrl)
+      return url.toString()
+    }
+    // For internal raw API, use query parameter format to avoid proxy issues with file extensions
+    if (bucketName) {
+      const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
+      return `${baseUrl}/api/raw/${bucketName}?path=${encodeURIComponent(filePath)}`
+    }
+    // Fallback to global CDN_BASE_URL
+    const url = new URL(filePath, CDN_BASE_URL)
     return url.toString()
   }
 

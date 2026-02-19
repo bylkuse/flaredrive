@@ -176,6 +176,6 @@ objects.post('/:bucketId/set-metadata', async (ctx) => {
   return ctx.json({
     path: key,
     isPublic: meta?.isPublic === 1,
-    url: `/api/raw/${bucketId}/${key}`,
+    url: `/api/raw/${bucketId}?path=${encodeURIComponent(key)}`,
   })
 })

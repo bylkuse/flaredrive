@@ -59,7 +59,7 @@ bucket.post('*/metadata', async (ctx) => {
   return ctx.json({
     path: filePath,
     isPublic: meta?.isPublic === 1,
-    url: `/api/raw/${bucketId}/${filePath}`,
+    url: `/api/raw/${bucketId}?path=${encodeURIComponent(filePath)}`,
   })
 })
 
@@ -88,7 +88,7 @@ bucket.patch('*', async (ctx) => {
   return ctx.json({
     path,
     isPublic: meta?.isPublic === 1,
-    url: `/api/raw/${bucketId}/${path}`,
+    url: `/api/raw/${bucketId}?path=${encodeURIComponent(path)}`,
   })
 })
 
