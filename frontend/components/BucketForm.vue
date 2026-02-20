@@ -116,6 +116,11 @@ const message = useMessage()
 const loading = ref(false)
 const formRef = ref<FormInst | null>(null)
 
+// Debug: log props on mount
+onMounted(() => {
+  console.log('BucketForm mounted, props.bucket:', JSON.stringify(props.bucket, null, 2))
+})
+
 const formValue = reactive({
   name: props.bucket?.name || '',
   bucketName: props.bucket?.bucketName || '',
@@ -128,6 +133,14 @@ const formValue = reactive({
   forcePathStyle: props.bucket?.forcePathStyle === 1 || props.bucket?.forcePathStyle === true,
   uploadMethod: props.bucket?.uploadMethod || 'presigned',
   defaultPublic: props.bucket?.defaultPublic === 1 || props.bucket?.defaultPublic === true,
+})
+
+// Debug: log formValue after initialization
+console.log('BucketForm formValue initialized:', {
+  forcePathStyle: formValue.forcePathStyle,
+  defaultPublic: formValue.defaultPublic,
+  bucketForcePathStyle: props.bucket?.forcePathStyle,
+  bucketDefaultPublic: props.bucket?.defaultPublic,
 })
 
 // Watch for bucket prop changes to update form values
