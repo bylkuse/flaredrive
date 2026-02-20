@@ -1,5 +1,8 @@
 <template lang="pug">
 NForm.space-y-4(ref='formRef', :model='formValue', :rules='rules', @submit.prevent='handleSubmit')
+  //- Debug info - remove after testing
+  .text-xs.text-red-500.mb-2 DEBUG: defaultPublic={{ bucket?.defaultPublic }}, formValue={{ formValue.defaultPublic }}
+
   NFormItem(label='Display Name', path='name', feedback='Display name for this bucket')
     NInput(v-model:value='formValue.name', placeholder='e.g. My Assets', size='large')
       template(#prefix)
