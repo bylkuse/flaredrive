@@ -134,6 +134,13 @@ const formValue = reactive({
 watch(
   () => props.bucket,
   (newBucket) => {
+    console.log('BucketForm watch triggered:', {
+      newBucket,
+      defaultPublic: newBucket?.defaultPublic,
+      forcePathStyle: newBucket?.forcePathStyle,
+      typeofDefaultPublic: typeof newBucket?.defaultPublic,
+      typeofForcePathStyle: typeof newBucket?.forcePathStyle,
+    })
     if (!newBucket) return // Don't reset form when bucket becomes undefined
     formValue.name = newBucket.name || ''
     formValue.bucketName = newBucket.bucketName || ''
@@ -146,6 +153,10 @@ watch(
     formValue.forcePathStyle = newBucket.forcePathStyle === 1 || newBucket.forcePathStyle === true
     formValue.uploadMethod = newBucket.uploadMethod || 'presigned'
     formValue.defaultPublic = newBucket.defaultPublic === 1 || newBucket.defaultPublic === true
+    console.log('formValue after update:', {
+      forcePathStyle: formValue.forcePathStyle,
+      defaultPublic: formValue.defaultPublic,
+    })
   },
   { immediate: true }
 )
