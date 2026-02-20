@@ -30,8 +30,17 @@ app.get('*', async (ctx) => {
 
   // 2. Public check (if not owner)
   if (!isOwner) {
+    // Check if bucket has defaultPublic enabled
+    const bucketDefaultPublic = cfg.defaultPublic === 1
+
+    // Check file-level public setting
     const meta = await getPathMetadata(ctx, bucketId, filePath)
-    const isPublic = meta?.isPublic === 1
+    const fileIsPublic = meta?.isPublic === 1
+
+    // Allow access if either bucket default is public or file is explicitly public
+    // If file has explicit metadata, respect that over bucket default
+    const isPublic = meta ? fileIsPublic : bucketDefaultPublic
+
     if (!isPublic) {
       // If we want to support "Directory Password" later, check it here
       return ctx.json({ error: 'Forbidden' }, 403)

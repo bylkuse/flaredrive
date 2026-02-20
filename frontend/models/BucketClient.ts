@@ -35,6 +35,7 @@ export interface BucketInfo {
   accessKeyId?: string // Usually masked or not returned fully if secure
   forcePathStyle?: number | boolean
   uploadMethod?: 'presigned' | 'proxy'
+  defaultPublic?: number | boolean
 }
 
 export class BucketClient {

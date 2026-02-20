@@ -16,6 +16,7 @@ export const getBucketConfigById = async (ctx: any, id: string) => {
       forcePathStyle: bucketsTable.forcePathStyle,
       uploadMethod: bucketsTable.uploadMethod,
       cdnBaseUrl: bucketsTable.cdnBaseUrl,
+      defaultPublic: bucketsTable.defaultPublic,
     })
     .from(bucketsTable)
     .where(eq(bucketsTable.id, id))

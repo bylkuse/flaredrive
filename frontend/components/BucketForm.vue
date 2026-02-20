@@ -78,6 +78,15 @@ NForm.space-y-4(ref='formRef', :model='formValue', :rules='rules', @submit.preve
       template(#checked) Enabled
       template(#unchecked) Disabled
 
+  NFormItem(
+    label='Default Public Access',
+    path='defaultPublic',
+    feedback='When enabled, new files in this bucket are public by default. Files with explicit settings will respect their own setting.'
+  )
+    NSwitch(v-model:checked='formValue.defaultPublic') 
+      template(#checked) Public
+      template(#unchecked) Private
+
   .flex.justify-end.gap-3.pt-4
     NButton(type='error', quaternary, @click='$emit("cancel")') Cancel
     NButton(attr-type='submit', type='primary', :loading='loading') {{ bucket ? 'Save Changes' : 'Create Bucket' }}
@@ -118,6 +127,7 @@ const formValue = reactive({
   edgeThumbnailUrl: props.bucket?.edgeThumbnailUrl || '',
   forcePathStyle: props.bucket?.forcePathStyle === 1 || props.bucket?.forcePathStyle === true,
   uploadMethod: props.bucket?.uploadMethod || 'presigned',
+  defaultPublic: props.bucket?.defaultPublic === 1 || props.bucket?.defaultPublic === true,
 })
 
 const uploadMethodOptions = [
@@ -179,6 +189,7 @@ const handleSubmit = async () => {
     const payload = {
       ...formValue,
       forcePathStyle: formValue.forcePathStyle ? 1 : 0,
+      defaultPublic: formValue.defaultPublic ? 1 : 0,
     }
 
     if (props.bucket) {
