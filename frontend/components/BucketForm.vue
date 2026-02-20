@@ -134,17 +134,18 @@ const formValue = reactive({
 watch(
   () => props.bucket,
   (newBucket) => {
-    formValue.name = newBucket?.name || ''
-    formValue.bucketName = newBucket?.bucketName || ''
-    formValue.endpointUrl = newBucket?.endpointUrl || ''
-    formValue.region = newBucket?.region || 'auto'
+    if (!newBucket) return // Don't reset form when bucket becomes undefined
+    formValue.name = newBucket.name || ''
+    formValue.bucketName = newBucket.bucketName || ''
+    formValue.endpointUrl = newBucket.endpointUrl || ''
+    formValue.region = newBucket.region || 'auto'
     formValue.accessKeyId = ''
     formValue.secretAccessKey = ''
-    formValue.cdnBaseUrl = newBucket?.cdnBaseUrl || ''
-    formValue.edgeThumbnailUrl = newBucket?.edgeThumbnailUrl || ''
-    formValue.forcePathStyle = newBucket?.forcePathStyle === 1 || newBucket?.forcePathStyle === true
-    formValue.uploadMethod = newBucket?.uploadMethod || 'presigned'
-    formValue.defaultPublic = newBucket?.defaultPublic === 1 || newBucket?.defaultPublic === true
+    formValue.cdnBaseUrl = newBucket.cdnBaseUrl || ''
+    formValue.edgeThumbnailUrl = newBucket.edgeThumbnailUrl || ''
+    formValue.forcePathStyle = newBucket.forcePathStyle === 1 || newBucket.forcePathStyle === true
+    formValue.uploadMethod = newBucket.uploadMethod || 'presigned'
+    formValue.defaultPublic = newBucket.defaultPublic === 1 || newBucket.defaultPublic === true
   },
   { immediate: true }
 )
