@@ -1,8 +1,5 @@
 <template lang="pug">
 NForm.space-y-4(ref='formRef', :model='formValue', :rules='rules', @submit.prevent='handleSubmit')
-  //- Debug info - remove after testing
-  .text-xs.text-red-500.mb-2 DEBUG: defaultPublic={{ bucket?.defaultPublic }}, formValue={{ formValue.defaultPublic }}
-
   NFormItem(label='Display Name', path='name', feedback='Display name for this bucket')
     NInput(v-model:value='formValue.name', placeholder='e.g. My Assets', size='large')
       template(#prefix)
@@ -119,11 +116,6 @@ const message = useMessage()
 const loading = ref(false)
 const formRef = ref<FormInst | null>(null)
 
-// Debug: log props on mount
-onMounted(() => {
-  console.log('BucketForm mounted, props.bucket:', JSON.stringify(props.bucket, null, 2))
-})
-
 const formValue = reactive({
   name: props.bucket?.name || '',
   bucketName: props.bucket?.bucketName || '',
@@ -137,45 +129,6 @@ const formValue = reactive({
   uploadMethod: props.bucket?.uploadMethod || 'presigned',
   defaultPublic: props.bucket?.defaultPublic === 1 || props.bucket?.defaultPublic === true,
 })
-
-// Debug: log formValue after initialization
-console.log('BucketForm formValue initialized:', {
-  forcePathStyle: formValue.forcePathStyle,
-  defaultPublic: formValue.defaultPublic,
-  bucketForcePathStyle: props.bucket?.forcePathStyle,
-  bucketDefaultPublic: props.bucket?.defaultPublic,
-})
-
-// Watch for bucket prop changes to update form values
-watch(
-  () => props.bucket,
-  (newBucket) => {
-    console.log('BucketForm watch triggered:', {
-      newBucket,
-      defaultPublic: newBucket?.defaultPublic,
-      forcePathStyle: newBucket?.forcePathStyle,
-      typeofDefaultPublic: typeof newBucket?.defaultPublic,
-      typeofForcePathStyle: typeof newBucket?.forcePathStyle,
-    })
-    if (!newBucket) return // Don't reset form when bucket becomes undefined
-    formValue.name = newBucket.name || ''
-    formValue.bucketName = newBucket.bucketName || ''
-    formValue.endpointUrl = newBucket.endpointUrl || ''
-    formValue.region = newBucket.region || 'auto'
-    formValue.accessKeyId = ''
-    formValue.secretAccessKey = ''
-    formValue.cdnBaseUrl = newBucket.cdnBaseUrl || ''
-    formValue.edgeThumbnailUrl = newBucket.edgeThumbnailUrl || ''
-    formValue.forcePathStyle = newBucket.forcePathStyle === 1 || newBucket.forcePathStyle === true
-    formValue.uploadMethod = newBucket.uploadMethod || 'presigned'
-    formValue.defaultPublic = newBucket.defaultPublic === 1 || newBucket.defaultPublic === true
-    console.log('formValue after update:', {
-      forcePathStyle: formValue.forcePathStyle,
-      defaultPublic: formValue.defaultPublic,
-    })
-  },
-  { immediate: true }
-)
 
 const uploadMethodOptions = [
   { label: 'Presigned direct upload', value: 'presigned' },
