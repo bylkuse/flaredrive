@@ -25,7 +25,13 @@
     style='width: 600px; max-width: 95vw',
     :bordered='false'
   )
-    BucketForm(:bucket='selectedBucket || undefined', @cancel='showModal = false', @success='handleFormSuccess')
+    BucketForm(
+      v-if='showModal',
+      :key='selectedBucket?.id || "new"',
+      :bucket='selectedBucket || undefined',
+      @cancel='showModal = false',
+      @success='handleFormSuccess'
+    )
 </template>
 
 <script setup lang="ts">

@@ -79,7 +79,13 @@
     style='width: 600px; max-width: 95vw',
     :bordered='false'
   )
-    BucketForm(:bucket='editingBucket || undefined', @cancel='closeModal', @success='handleFormSuccess')
+    BucketForm(
+      v-if='showModal',
+      :key='editingBucket?.id || "new"',
+      :bucket='editingBucket || undefined',
+      @cancel='closeModal',
+      @success='handleFormSuccess'
+    )
 </template>
 
 <script setup lang="tsx">
