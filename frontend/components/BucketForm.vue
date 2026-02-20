@@ -130,6 +130,25 @@ const formValue = reactive({
   defaultPublic: props.bucket?.defaultPublic === 1 || props.bucket?.defaultPublic === true,
 })
 
+// Watch for bucket prop changes to update form values
+watch(
+  () => props.bucket,
+  (newBucket) => {
+    formValue.name = newBucket?.name || ''
+    formValue.bucketName = newBucket?.bucketName || ''
+    formValue.endpointUrl = newBucket?.endpointUrl || ''
+    formValue.region = newBucket?.region || 'auto'
+    formValue.accessKeyId = ''
+    formValue.secretAccessKey = ''
+    formValue.cdnBaseUrl = newBucket?.cdnBaseUrl || ''
+    formValue.edgeThumbnailUrl = newBucket?.edgeThumbnailUrl || ''
+    formValue.forcePathStyle = newBucket?.forcePathStyle === 1 || newBucket?.forcePathStyle === true
+    formValue.uploadMethod = newBucket?.uploadMethod || 'presigned'
+    formValue.defaultPublic = newBucket?.defaultPublic === 1 || newBucket?.defaultPublic === true
+  },
+  { immediate: true }
+)
+
 const uploadMethodOptions = [
   { label: 'Presigned direct upload', value: 'presigned' },
   { label: 'FlareDrive proxy upload', value: 'proxy' },
