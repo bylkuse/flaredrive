@@ -29,6 +29,13 @@
       "when": 1768904840108,
       "tag": "0003_elite_raider",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1771559040000,
+      "tag": "0004_add_default_public",
+      "breakpoints": true
     }
   ]
 }
