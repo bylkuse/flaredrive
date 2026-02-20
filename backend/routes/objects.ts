@@ -8,7 +8,6 @@ import { nanoid } from 'nanoid'
 import { getSessionUser } from '../utils/session.js'
 import { createAdapterFromConfig, isValidKey } from '../utils/bucket-utils.js'
 import { getBucketConfigById } from '../utils/bucket-resolver.js'
-import { getPathMetadata, setPathMetadata } from '../utils/metadata.js'
 
 export const objects = new Hono<HonoEnv>()
 
@@ -138,44 +137,4 @@ objects.post('/:bucketId/record', async (ctx) => {
     .run()
 
   return ctx.json({ ok: true })
-})
-
-// Set file metadata (isPublic, etc.) - path in request body to avoid proxy issues
-type SetMetadataBody = {
-  key: string
-  isPublic?: boolean
-}
-
-objects.post('/:bucketId/set-metadata', async (ctx) => {
-  const user = await getSessionUser(ctx)
-  if (!user) return ctx.json({ error: 'Unauthorized' }, 401)
-
-  const bucketId = ctx.req.param('bucketId')
-  if (!bucketId) return ctx.json({ error: 'Invalid bucketId' }, 400)
-
-  const body = (await ctx.req.json().catch(() => null)) as SetMetadataBody | null
-  let key = (body?.key || '').toString()
-
-  if (key.startsWith('/')) {
-    key = key.slice(1)
-  }
-
-  if (!isValidKey(key)) return ctx.json({ error: 'Invalid key' }, 400)
-
-  const cfg = await getBucketConfigById(ctx, bucketId)
-  if (!cfg) return ctx.json({ error: 'Bucket not found' }, 404)
-  if (cfg.ownerUserId !== user.id) return ctx.json({ error: 'Forbidden' }, 403)
-
-  const isPublic = body?.isPublic
-
-  if (typeof isPublic === 'boolean') {
-    await setPathMetadata(ctx, user.id, bucketId, key, { isPublic })
-  }
-
-  const meta = await getPathMetadata(ctx, bucketId, key)
-  return ctx.json({
-    path: key,
-    isPublic: meta?.isPublic === 1,
-    url: `/api/raw/${bucketId}?path=${encodeURIComponent(key)}`,
-  })
 })

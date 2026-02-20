@@ -164,19 +164,9 @@ export const useBucketStore = defineStore('bucket', () => {
     if (!filePath) {
       return ''
     }
-    // If bucket has a custom CDN URL configured, use traditional path format
-    const customCdnUrl = bucketCdnMap.value[bucketName]
-    if (customCdnUrl) {
-      const url = new URL(filePath, customCdnUrl)
-      return url.toString()
-    }
-    // For internal raw API, use query parameter format to avoid proxy issues with file extensions
-    if (bucketName) {
-      const baseUrl = typeof window !== 'undefined' ? window.location.origin : ''
-      return `${baseUrl}/api/raw/${bucketName}?path=${encodeURIComponent(filePath)}`
-    }
-    // Fallback to global CDN_BASE_URL
-    const url = new URL(filePath, CDN_BASE_URL)
+    const cdnBaseUrl =
+      bucketCdnMap.value[bucketName] || (bucketName ? normalizeCdnBaseUrl(`/api/raw/${bucketName}/`) : CDN_BASE_URL)
+    const url = new URL(filePath, cdnBaseUrl)
     return url.toString()
   }
 
@@ -228,10 +218,7 @@ export const useBucketStore = defineStore('bucket', () => {
 
   const togglePublic = async (path: string, isPublic: boolean) => {
     try {
-      // Use /api/objects/:bucketId/set-metadata with path in body
-      // to avoid proxy issues with file extensions in URL
-      const { data } = await fexios.post(`/api/objects/${currentBucketName.value}/set-metadata`, {
-        key: path,
+      const { data } = await fexios.patch(`/api/bucket/${currentBucketName.value}/${path}`, {
         isPublic,
       })
       // Should probably update the list item state locally too if we had it in store

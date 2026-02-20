@@ -9,28 +9,9 @@ import { getPathMetadata } from '../utils/metadata.js'
 const app = new Hono<HonoEnv>()
 export { app as raw }
 
-// Helper to get file path from either URL path or query parameter
-const getFilePath = (ctx: any): { bucketId: string; filePath: string } => {
-  // First try query parameter format: /api/raw/{bucketId}?path=xxx
-  const pathFromQuery = ctx.req.query('path')
-  if (pathFromQuery) {
-    const { bucketId } = parseBucketPath(ctx.req.path, 'raw')
-    let filePath = pathFromQuery
-    if (filePath.startsWith('/')) {
-      filePath = filePath.slice(1)
-    }
-    return { bucketId, filePath }
-  }
-
-  // Fallback to URL path format: /api/raw/{bucketId}/path/to/file.jpg
-  const { bucketId, path: filePath } = parseBucketPath(ctx.req.path, 'raw')
-  return { bucketId, filePath }
-}
-
 app.get('*', async (ctx) => {
-  const { bucketId, filePath } = getFilePath(ctx)
-
-  if (!filePath || filePath.endsWith('/')) {
+  const { bucketId, path: filePath } = parseBucketPath(ctx.req.path, 'raw')
+  if (filePath.endsWith('/')) {
     return ctx.json(
       {
         error: 'Invalid file path',
@@ -66,10 +47,7 @@ app.get('*', async (ctx) => {
     const cdnUrl = new URL(filePath, normalizedCdnBaseUrl)
     const reqUrl = new URL(ctx.req.url)
     reqUrl.searchParams.forEach((value, key) => {
-      // Skip 'path' parameter as it's for our routing
-      if (key !== 'path') {
-        cdnUrl.searchParams.append(key, value)
-      }
+      cdnUrl.searchParams.append(key, value)
     })
     if (isDownload) {
       cdnUrl.searchParams.append('t', Date.now().toString())
