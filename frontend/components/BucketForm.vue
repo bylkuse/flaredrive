@@ -77,7 +77,7 @@ NForm.space-y-4(ref='formRef', :model='formValue', :rules='rules', @submit.preve
     )
 
   NFormItem(label='Force Path Style', path='forcePathStyle')
-    NSwitch(v-model:checked='formValue.forcePathStyle') 
+    NSwitch(:value='formValue.forcePathStyle', @update:value='(v) => (formValue.forcePathStyle = v)')
       template(#checked) Enabled
       template(#unchecked) Disabled
 
@@ -86,7 +86,7 @@ NForm.space-y-4(ref='formRef', :model='formValue', :rules='rules', @submit.preve
     path='defaultPublic',
     feedback='When enabled, new files in this bucket are public by default. Files with explicit settings will respect their own setting.'
   )
-    NSwitch(v-model:checked='formValue.defaultPublic') 
+    NSwitch(:value='formValue.defaultPublic', @update:value='(v) => (formValue.defaultPublic = v)')
       template(#checked) Public
       template(#unchecked) Private
 
