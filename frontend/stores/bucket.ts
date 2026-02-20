@@ -218,10 +218,11 @@ export const useBucketStore = defineStore('bucket', () => {
 
   const togglePublic = async (path: string, isPublic: boolean) => {
     try {
-      const { data } = await fexios.patch(`/api/bucket/${currentBucketName.value}/${path}`, {
+      // Use POST with path in request body for better compatibility
+      const { data } = await fexios.post(`/api/objects/${currentBucketName.value}/set-metadata`, {
+        key: path,
         isPublic,
       })
-      // Should probably update the list item state locally too if we had it in store
       return data
     } catch (e) {
       console.error('Failed to toggle public', e)
